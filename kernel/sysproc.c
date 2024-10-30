@@ -5,6 +5,10 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "sysinfo_data.h"
+#include "types.h"
+
+extern struct proc proc[];
 
 uint64
 sys_exit(void)
@@ -90,4 +94,19 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+uint64
+sys_sysinfo(void)
+{
+  uint64 addr;
+  argaddr(0, &addr);
+
+  struct sysinfo_data information;
+  information.running_processes = running_processes_count();
+  information.free_memory = free_memory_space();
+
+  struct proc *p = myproc();
+  copyout(p->pagetable, addr, (char*)&information, sizeof(information));
+  return 0;
 }

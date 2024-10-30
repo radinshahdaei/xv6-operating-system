@@ -693,3 +693,14 @@ procdump(void)
     printf("\n");
   }
 }
+
+int running_processes_count() {
+  int running_processes = NPROC;
+
+  for(int i = 0; i < NPROC; i++) {
+    if (proc[i].state == USED || proc[i].state == UNUSED)
+      running_processes--;
+  }
+
+  return running_processes;
+}
